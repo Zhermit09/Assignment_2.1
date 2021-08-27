@@ -1,0 +1,7 @@
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\obj\Debug\Uppgift_2.1.csproj.AssemblyReference.cache
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\obj\Debug\Uppgift_2.1.csproj.CoreCompileInputs.cache
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\bin\Debug\Uppgift_2.1.exe.config
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\bin\Debug\Uppgift_2.1.exe
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\bin\Debug\Uppgift_2.1.pdb
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\obj\Debug\Uppgift_2.1.exe
+C:\Users\pavel\source\repos\Uppgift_2.1\Uppgift_2.1\obj\Debug\Uppgift_2.1.pdb
