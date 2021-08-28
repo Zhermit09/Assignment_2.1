@@ -17,31 +17,20 @@ namespace Uppgift_2._1
 
         void Start()
         {
-            /* Random random = new Random();
-             int ran = random.Next(1, 5);
-
-             list.Add(new Ball((float)13.5, new Color(5, 255, 120, 120)));
-
-             for (int i = 0; i < ran; i++)
-             {
-                 list.Add(new Ball(random.Next(32), new Color(random.Next(255), random.Next(255), random.Next(255))));
-             }
-
-             foreach (Ball ball in list)
-             {
-                 ran = random.Next(1, 11);
-                 for (int i = 0; i < ran; i++)
-                 {
-                     ball.Throw();
-                 }
-                 Console.WriteLine("Ball " + (list.IndexOf(ball) + 1) + " Thrown " + ball.ThrowAmount() + " times");
-             }*/
-            mainMenu();
+            bool quit = false;
+            while (quit == false)
+            {
+                quit = mainMenu();
+            }
+            Console.Clear();
+            Console.WriteLine("Program is closing...");
             Console.ReadLine();
         }
-        //_______________________________________________________________________________________________________
-        void mainMenu()
+      
+        bool mainMenu()
         {
+            bool exit = false;
+
             Console.Clear();
             Console.WriteLine(" Ball Thrower\n" +
                 "-----------------\n" +
@@ -60,39 +49,44 @@ namespace Uppgift_2._1
                 case "c":
                 case "create":
                     create();
-                    mainMenu();
                     break;
                 case "2":
                 case "m":
                 case "modify":
-                    modify(); // /!\ not done  ;;;;;;;; change temp index to Ball temp
-                    mainMenu();
+                    while (exit == false)
+                    {
+                        exit = modify();
+                    }
                     break;
                 case "3":
                 case "s":
                 case "show":
                     listAll();
-                    Console.Write("\nPress 'Enter' to continue");
-                    Console.ReadLine();
-                    mainMenu();
+                    if (list.Count != 0)
+                    {
+                        Console.Write("\nPress 'Enter' to continue");
+                        Console.ReadLine();
+                    }
                     break;
                 case "4":
                 case "t":
                 case "throw":
-                    mainMenu();
+                    while (exit == false)
+                    {
+                        exit = throwBall();
+                    }
                     break;
                 case "5":
                 case "q":
                 case "quit":
-
-                    break;
+                    return true;
                 default:
                     unknownCmd();
-                    mainMenu();
                     break;
             }
+            return false;
         }
-        //_______________________________________________________________________________________________________
+       
         void create()
         {
             float ra;
@@ -102,11 +96,13 @@ namespace Uppgift_2._1
             Console.Clear();
             Console.WriteLine(" Create a ball:\n----------------------");
             ra = giveValueFloat(message[0]);
+
             Console.WriteLine("\nColor (RGBa) [Max is 255]");
             for (int i = 0; i < rgba.Length; i++)
             {
                 rgba[i] = giveValueInt(message[i + 1]);
             }
+
             if (rgba[3] == int.MaxValue)
             {
                 list.Add(new Ball(ra, new Color(rgba[0], rgba[1], rgba[2])));
@@ -118,7 +114,6 @@ namespace Uppgift_2._1
             Console.WriteLine("\nBall created successfully!");
             Console.ReadLine();
         }
-
         int giveValueInt(string message)
         {
             string temp = " ";
@@ -128,7 +123,7 @@ namespace Uppgift_2._1
                 {
                     Console.Write(message + "\t");
                     temp = Console.ReadLine();
-                    if (int.Parse(temp) > 255)
+                    if (int.Parse(temp) > 255 || int.Parse(temp) < 0)
                     {
                         temp = " ";
                     }
@@ -147,34 +142,37 @@ namespace Uppgift_2._1
         }
         float giveValueFloat(string message)
         {
+            string temp;
             while (true)
             {
                 try
                 {
                     Console.Write(message);
-                    return float.Parse(Console.ReadLine());
+                    temp = Console.ReadLine();
+                    if (float.Parse(temp) < 0)
+                    {
+                        temp = " ";
+                    }
+                    return float.Parse(temp);
                 }
                 catch
                 {
-
                     tryAgain();
                 }
             }
         }
+      
 
-
-        //_______________________________________________________________________________________________________
-
-        void modify()
+        bool modify()
         {
-
-
+            bool back = false;
             Console.Clear();
             Console.WriteLine(" Modify Ball\n" +
                 "-----------------\n" +
                 "1. Change Radius\n" +
-                "2. Change Color\n"+
-                "3. Delete ball\n");
+                "2. Change Color\n" +
+                "3. Delete ball\n" +
+                "4. Go back\n");
 
             Console.Write("Input: ");
             string answer = Console.ReadLine().ToLower().Trim();
@@ -184,40 +182,61 @@ namespace Uppgift_2._1
                 case "1":
                 case "r":
                 case "radius":
-                    radius();
-                    mainMenu();
+                    Console.Clear();
+                    if (list.Count == 0)
+                    {
+                        ballCheck();
+                    }
+                    else
+                    {
+                        int index = pickBall();
+                        while (back == false)
+                        {
+                            back = radius(index);
+                        }
+                    }
                     break;
                 case "2":
                 case "c":
                 case "color":
-                    color();
+                    Console.Clear();
+                    if (list.Count == 0)
+                    {
+                        ballCheck();
+                    }
+                    else
+                    {
+                        int index = pickBall();
+                        while (back == false)
+                        {
+                            back = color(index);
+                        }
+                    }
                     break;
                 case "3":
                 case "d":
                 case "delete":
                     delete();
                     break;
+                case "4":
+                case "b":
+                case "back":
+                    return true;
                 default:
                     unknownCmd();
-                    modify();
                     break;
             }
+            return false;
         }
-        void radius()
+        bool radius(int index)
         {
-            int index = int.MaxValue;
             Console.Clear();
-            pickBall(ref index);
-            if (index == int.MaxValue)
-            {
-                radius();
-            }
 
-            Console.Clear();
             Console.WriteLine(" Modify Radius\n" +
                 "-----------------\n" +
                 "1. Manually Change Radius\n" +
-                "2. Shrink (Set radius to 0)\n");
+                "2. Shrink (Set radius to 0)\n" +
+                "3. Go back\n");
 
             Console.Write("Input: ");
             string answer = Console.ReadLine().ToLower().Trim();
@@ -234,21 +253,33 @@ namespace Uppgift_2._1
                 case "shrink":
                     list[index].Shrink();
                     break;
+                case "3":
+                case "b":
+                case "back":
+                    return true;
                 default:
                     unknownCmd();
-                    radius();
                     break;
             }
+            return false;
         }
         void manualRadius(int index)
         {
+            string temp;
             Console.Clear();
             while (true)
             {
                 try
                 {
                     Console.Write("Set new radius to: ");
-                    list[index].radius = float.Parse(Console.ReadLine());
+                    temp = Console.ReadLine();
+                    if (float.Parse(temp) < 0)
+                    {
+                        temp = " ";
+                    }
+
+
+                    list[index].radius = float.Parse(temp);
                     Console.WriteLine("Success!");
                     Console.ReadLine();
                     break;
@@ -259,24 +290,16 @@ namespace Uppgift_2._1
                 }
             }
         }
-        void color()
+        bool color(int index)
         {
-            int index = int.MaxValue;
-            Console.Clear();
-            pickBall(ref index);
-            if (index == int.MaxValue)
-            {
-                color();
-            }
-
-
             Console.Clear();
             Console.WriteLine(" Change Color\n" +
                 "-----------------\n" +
                 "1. Change Red\n" +
-                "1. Change Green\n" +
-                "1. Change Blue\n" +
-                "2. Change Alpha\n");
+                "2. Change Green\n" +
+                "3. Change Blue\n" +
+                "4. Change Alpha\n" +
+                "5. Go back\n");
 
             Console.Write("Input: ");
             string answer = Console.ReadLine().ToLower().Trim();
@@ -287,38 +310,33 @@ namespace Uppgift_2._1
                 case "r":
                 case "red":
                     list[index].color.Red = rgba(index);
-                    Console.WriteLine("Success!");
-                    Console.ReadLine();
-                    mainMenu();
                     break;
                 case "2":
                 case "g":
                 case "green":
                     list[index].color.Green = rgba(index);
-                    Console.WriteLine("Success!");
-                    Console.ReadLine();
-                    mainMenu();
                     break;
                 case "3":
                 case "b":
                 case "blue":
                     list[index].color.Blue = rgba(index);
-                    Console.WriteLine("Success!");
-                    Console.ReadLine();
-                    mainMenu();
                     break;
                 case "4":
                 case "a":
                 case "alpha":
                     list[index].color.Alpha = rgba(index);
-                    Console.WriteLine("Success!");
-                    Console.ReadLine();
                     break;
+                case "5":
+                case "ba":
+                case "back":
+                    return true;
                 default:
                     unknownCmd();
-                    modify();
-                    break;
+                    return false;
             }
+            Console.WriteLine("Success!");
+            Console.ReadLine();
+            return false;
         }
         int rgba(int index)
         {
@@ -330,7 +348,7 @@ namespace Uppgift_2._1
                 {
                     Console.Write("Set new color value to: ");
                     temp = Console.ReadLine();
-                    if (int.Parse(temp) > 255)
+                    if (int.Parse(temp) > 255 || int.Parse(temp) < 0)
                     {
                         temp = " ";
                     }
@@ -342,21 +360,107 @@ namespace Uppgift_2._1
                 }
             }
         }
-
         void delete()
         {
-            int index = int.MaxValue;
             Console.Clear();
-            pickBall(ref index);
-            if (index == int.MaxValue)
+            if (list.Count != 0)
             {
-                delete();
+                int index = pickBall();
+                Console.Clear();
+                list.Remove(list[index]);
+                Console.WriteLine($"\n Ball #{index} deleted successfully");
+            }
+            else
+            {
+                Console.WriteLine("/!\\ You have no balls /!\\");
+                Console.ReadLine();
             }
 
-            list.Remove(list[index]);
-            Console.WriteLine($"\n Ball #{index} deleted successfully");
+
         }
-        //_______________________________________________________________________________________________________
+
+
+        bool throwBall()
+        {
+            Console.Clear();
+            Console.WriteLine(" Throw\n" +
+                "-----------------\n" +
+                "1. Throw one\n" +
+                "2. Throw all\n" +
+                "3. Go back\n");
+
+            Console.Write("Input: ");
+            string answer = Console.ReadLine().ToLower().Trim();
+            switch (answer)
+            {
+
+                case "1":
+                case "o":
+                case "one":
+                    oneThrow();
+                    break;
+                case "2":
+                case "a":
+                case "all":
+                    allThrow();
+                    break;
+                case "3":
+                case "b":
+                case "back":
+                    return true;
+                default:
+                    unknownCmd();
+                    break;
+
+            }
+            return false;
+        }
+        void oneThrow()
+        {
+            Console.Clear();
+            if (list.Count != 0)
+            {
+                int i = pickBall();
+                Console.Clear();
+                list[i].Throw();
+                Console.WriteLine("Finished!");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("/!\\ You have no balls /!\\");
+                Console.ReadLine();
+            }
+        }
+
+        void allThrow()
+        {
+            Console.Clear();
+            if (list.Count != 0)
+            {
+                foreach (Ball ball in list)
+                {
+                    ball.Throw();
+                }
+                if (list.Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("/!\\ You have no balls /!\\");
+                }
+                else
+                {
+                    Console.WriteLine("Finished!");
+                }
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("/!\\ You have no balls /!\\");
+                Console.ReadLine();
+            }
+        }
+
+        
         void listAll()
         {
             Console.Clear();
@@ -368,14 +472,12 @@ namespace Uppgift_2._1
             {
                 Console.WriteLine("/!\\ You have no balls /!\\");
                 Console.ReadLine();
-                mainMenu();
             }
         }
-
         void type(Ball ball)
         {
-            Console.WriteLine("\n-----------------" +
-                              "\n[Ball # " + list.IndexOf(ball) +
+            Console.WriteLine("-----------------" +
+                              "\n[Ball #" + list.IndexOf(ball) +
                               "]\n\nRadius: " + ball.radius +
                               "\nThrows: " + ball.ThrowAmount() +
                               "\n\nColor (RGBa)" +
@@ -383,31 +485,47 @@ namespace Uppgift_2._1
                               "\n  Green: " + ball.color.Green +
                               "\n  Blue:  " + ball.color.Blue +
                               "\n  Alpha: " + ball.color.Alpha +
-                              "\n-----------------");
+                              "\n-----------------\n");
         }
-        //_______________________________________________________________________________________________________
-        void pickBall(ref int index)
+  
+        int pickBall()
         {
-            Console.Clear();
-            listAll();
-            Console.Write("\nWhich Ball do you want to edit? #");
-            try
+            int index;
+
+
+            while (true)
             {
-                index = int.Parse(Console.ReadLine());
-                if (index >= list.Count)
+                Console.Clear();
+                listAll();
+                Console.Write("\nWhich Ball do you want to edit? #");
+                try
                 {
-                    Console.WriteLine("\n/!\\ Could not find the ball /!\\");
-                    Console.ReadLine();
-                    pickBall(ref index);
+
+                    index = int.Parse(Console.ReadLine());
+                    if (index >= list.Count || index < 0)
+                    {
+                        Console.WriteLine("\n/!\\ Could not find the ball /!\\");
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        return index;
+                    }
+                }
+                catch
+                {
+                    unknownCmd();
                 }
             }
-            catch
-            {
-                unknownCmd();
-            }
-            
         }
-        //_______________________________________________________________________________________________________
+
+        bool ballCheck()
+        {
+            Console.WriteLine("/!\\ You have no balls /!\\");
+            Console.ReadLine();
+            return true;
+        }
+ 
         void unknownCmd()
         {
             Console.Clear();

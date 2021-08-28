@@ -22,7 +22,9 @@ namespace Uppgift_2._1
         public void Shrink()
         {
             radius = 0;
-            Console.WriteLine("\nBall shrunk into the void");
+            Console.Clear();
+            Console.WriteLine("Ball shrunk into the void");
+            Console.ReadLine();
         }
 
         public void Throw()
@@ -30,6 +32,9 @@ namespace Uppgift_2._1
             if (radius > 0)
             {
                 thrown++;
+            }else
+            {
+                Console.WriteLine("Cannot throw balls with radius '0'");
             }
         }
 
